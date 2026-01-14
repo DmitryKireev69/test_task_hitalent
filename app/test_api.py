@@ -4,7 +4,6 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.main import app
 from app.models import Chat, Massage
-from app.schemas import CreateChatSchema, CreateMassageSchema
 from app.database import get_db_async_db
 
 mock_db_session = AsyncMock(spec=AsyncSession)
@@ -13,7 +12,6 @@ mock_db_session = AsyncMock(spec=AsyncSession)
 def test_create_chat_success():
     """Тест создания чата"""
 
-    # Подготовка данных для запроса
     chat_data = {
         "title": "Тестовый чат",
     }
@@ -53,7 +51,6 @@ def test_create_chat_success():
 def test_create_message_in_chat_success():
     """Тест успешного создания сообщения в чате"""
 
-    # Подготовка данных для запроса
     message_data = {
         "text": "Привет, это тестовое сообщение!",
         "chat_id": 1
@@ -88,20 +85,15 @@ def test_create_message_in_chat_success():
         MockMassage.return_value = mock_message
 
         with TestClient(app) as client:
-            # Отправляем запрос на создание сообщения в чате с ID=1
             response = client.post("/chats/1/messages", json=message_data)
 
-    # Проверяем результат
     print(f"Status code: {response.status_code}")
     print(f"Response: {response.text}")
 
-    # Убираем переопределение
     app.dependency_overrides.clear()
 
-    # Должен быть 201 Created
     assert response.status_code == 201
 
-    # Проверяем, что в ответе есть ожидаемые поля
     response_data = response.json()
     assert "id" in response_data
     assert response_data["text"] == "Привет, это тестовое сообщение!"
