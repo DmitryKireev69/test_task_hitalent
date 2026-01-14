@@ -12,12 +12,12 @@ router = APIRouter(
 
 @router.post('/{id}/messages', status_code=status.HTTP_201_CREATED, summary='Создать сообщение в чате',
              response_model=MassageSchema)
-async def create_message_in_chat(data_massage: CreateMassageSchema, chat_id: int, db: AsyncSession = Depends(get_db_async_db)):
+async def create_message_in_chat(data_massage: CreateMassageSchema, id: int, db: AsyncSession = Depends(get_db_async_db)):
     """Создает сообщение"""
-    result = await db.scalars(select(Chat).filter_by(id=chat_id))
+    result = await db.scalars(select(Chat).filter_by(id=id))
     chat = result.one_or_none()
     if chat is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Чат с идентификатором {chat_id} не найден!')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Чат с идентификатором {id} не найден!')
     massage = Massage(**data_massage.model_dump())
     db.add(massage)
     await db.commit()

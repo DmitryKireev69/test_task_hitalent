@@ -29,9 +29,9 @@ async def create_chat(data_chat: CreateChatSchema, db: AsyncSession = Depends(ge
 
 
 @router.delete('/{id}', summary='Удалить чат', status_code=status.HTTP_204_NO_CONTENT)
-async def delete_chat(chat_id: int, db: AsyncSession = Depends(get_db_async_db)):
+async def delete_chat(id: int, db: AsyncSession = Depends(get_db_async_db)):
     """Удаляет чат"""
-    chat = await get_chat(chat_id, db)
+    chat = await get_chat(id, db)
     await db.delete(chat)
     await db.commit()
     return None
@@ -39,7 +39,7 @@ async def delete_chat(chat_id: int, db: AsyncSession = Depends(get_db_async_db))
 
 @router.get('/{id}', summary='Получить чат с сообщениями по идентификатору' )
 async def get_chat_by_id(
-        chat_id: int,
+        id: int,
         db:AsyncSession = Depends(get_db_async_db),
         limit: int = Query(20, ge=20, le=100)
 ):
@@ -47,7 +47,7 @@ async def get_chat_by_id(
 
     subquery = (
         select(Massage.id)
-        .filter_by(chat_id=chat_id)
+        .filter_by(chat_id=id)
         .order_by('created_at')
         .limit(limit)
     )
@@ -61,7 +61,7 @@ async def get_chat_by_id(
                 )
             )
         )
-        .filter_by(id=chat_id)
+        .filter_by(id=id)
     )
 
     res = await db.scalars(query)
