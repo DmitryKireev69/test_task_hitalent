@@ -37,20 +37,11 @@ async def delete_chat(chat_id: int, db: AsyncSession = Depends(get_db_async_db))
     return None
 
 
-# GET /chats/{id} — получить чат и последние N сообщений
-#  Query: limit (по умолчанию 20, максимум 100)
-#  Response:
-#
-#
-# чат
-#
-#
-# messages: [] (сообщения отсортированы по created_at)
 @router.get('/{id}', summary='Получить чат с сообщениями по идентификатору' )
 async def get_chat_by_id(
         chat_id: int,
         db:AsyncSession = Depends(get_db_async_db),
-        limit: int = Query(2, ge=2, le=100)
+        limit: int = Query(20, ge=20, le=100)
 ):
     """Получение чата с сообщениями по идентификатору"""
 
